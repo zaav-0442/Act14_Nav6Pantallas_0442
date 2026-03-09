@@ -1,4 +1,6 @@
+import 'category_screen.dart';
 import 'package:flutter/material.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,21 +26,43 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black, // Aseguramos fondo negro
       appBar: AppBar(
         backgroundColor: Colors.black,
+        elevation: 0,
         automaticallyImplyLeading: false,
-        actions: [
-          const Icon(
-            Icons.flash_on,
-            color: Color(0xFF00FFFF),
+        // --- SECCIÓN DEL LOGO MODIFICADA ---
+        title: GestureDetector(
+          onTap: () => Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              Icon(
+                Icons.flash_on,
+                color: Color(0xFF00FFFF),
+                size: 28,
+              ),
+              SizedBox(width: 8),
+              Text(
+                "Freddy's", // Puedes cambiar este nombre por el de tu marca
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF00FFFF),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 10),
+        ),
+        // ----------------------------------
+        actions: [
           Builder(
             builder: (context) => IconButton(
               icon: const Icon(Icons.menu, color: Color(0xFFFF00FF)),
               onPressed: () => Scaffold.of(context).openEndDrawer(),
             ),
           ),
+          const SizedBox(width: 10),
         ],
       ),
       endDrawer: Drawer(
@@ -80,7 +104,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           decoration: BoxDecoration(
                             color: Colors.black,
                             borderRadius: BorderRadius.circular(20),
-                            // --- EL TOQUE NEÓN ---
                             border: Border.all(
                               color: const Color(0xFF00FFFF),
                               width: 2,
@@ -102,19 +125,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                 fit: BoxFit.cover,
                                 loadingBuilder:
                                     (context, child, loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return const Center(
-                                        child: CircularProgressIndicator(
-                                          color: Color(0xFF00FFFF),
-                                        ),
-                                      );
-                                    },
+                                  if (loadingProgress == null) return child;
+                                  return const Center(
+                                    child: CircularProgressIndicator(
+                                      color: Color(0xFF00FFFF),
+                                    ),
+                                  );
+                                },
                                 errorBuilder: (context, error, stackTrace) =>
                                     const Icon(
-                                      Icons.broken_image,
-                                      color: Colors.red,
-                                      size: 50,
-                                    ),
+                                  Icons.broken_image,
+                                  color: Colors.red,
+                                  size: 50,
+                                ),
                               ),
                             ),
                           ),
@@ -123,7 +146,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                 ),
-                // Flecha Izquierda
                 Positioned(
                   left: 10,
                   child: IconButton(
@@ -139,7 +161,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                 ),
-                // Flecha Derecha
                 Positioned(
                   right: 10,
                   child: IconButton(
@@ -190,53 +211,54 @@ class _HomeScreenState extends State<HomeScreen> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.only(left: 20),
               itemCount: 6,
-              // --- SECCIÓN DE CATEGORÍAS ACTUALIZADA ---
-              itemBuilder: (context, index) => Container(
-                width: 120,
-                margin: const EdgeInsets.only(right: 15, bottom: 10),
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(15),
-                  // --- ACENTO ROSA NEÓN ---
-                  border: Border.all(color: const Color(0xFFFF00FF), width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFFF00FF).withOpacity(0.4),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(13),
-                  child: AspectRatio(
-                    aspectRatio:
-                        1 / 1,
-                    child: Image.network(
-                      'https://raw.githubusercontent.com/zaav-0442/Act13_Navegacion3PantallasNegocio/main/assets/cat${index + 1}.webp',
-                      key: ValueKey(
-                        'cat_${index}_${DateTime.now().second}',
+              itemBuilder: (context, index) {
+                // Definimos la URL de la imagen para usarla en la navegación
+                final String imageUrl = 'https://raw.githubusercontent.com/zaav-0442/Act13_Navegacion3PantallasNegocio/main/assets/cat${index + 1}.webp';
+                final String categoryName = "Categoría ${index + 1}"; // Puedes personalizar los nombres
+
+                return GestureDetector(
+                  onTap: () {
+                    // ESTA ES LA MAGIA: Navega pasando el nombre y la imagen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CategoryScreen(
+                          categoryName: categoryName,
+                          imagePath: imageUrl,
+                        ),
                       ),
-                      fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            color: Color(0xFFFF00FF),
-                          ),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        print("Error cargando imagen: $error");
-                        return const Icon(
-                          Icons.broken_image,
-                          color: Colors.red,
-                        );
-                      },
+                    );
+                  },
+                  child: Container(
+                    width: 120,
+                    margin: const EdgeInsets.only(right: 15, bottom: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: const Color(0xFFFF00FF), width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFFF00FF).withOpacity(0.4),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(13),
+                      child: AspectRatio(
+                        aspectRatio: 1 / 1,
+                        child: Image.network(
+                          imageUrl, // Usamos la variable definida arriba
+                          key: ValueKey('cat_${index}_${DateTime.now().second}'),
+                          fit: BoxFit.cover,
+                          // ... (mantén tus loadingBuilder y errorBuilder iguales)
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
           const Spacer(),
